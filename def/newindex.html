@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X5 Tech — Стажировка для разработчиков</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230F5A05'/%3E%3Ctext x='50' y='68' text-anchor='middle' font-size='52' font-weight='bold' fill='white' font-family='Arial'%3EX5%3C/text%3E%3C/svg%3E">
+    <style>
+        :root {
+            --green-dark: #05310A;
+            --green: #0F5A05;
+            --green-light: #EAFBDC;
+            --green-pale: #EEFFDA;
+            --warm: #FFF6EA;
+            --bg: #FAFBF7;
+            --card: #FFFFFF;
+            --border: #E8EDE4;
+            --text: #1A1A1A;
+            --text-secondary: #5C6B5E;
+            --text-muted: #8A9B8C;
+            --red: #C0392B;
+            --purple: #6A1B9A;
+            --orange: #E67E22;
+            --blue: #2980B9;
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --radius-xl: 28px;
+            --shadow: 0 4px 20px rgba(5,49,10,0.06);
+            --shadow-lg: 0 12px 40px rgba(5,49,10,0.08);
+            --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Боковые овощи */
+        .veg-sidebar {
+            position: fixed;
+            top: 0; bottom: 0;
+            width: 200px;
+            z-index: 0;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 50px;
+            opacity: 0.12;
+        }
+        .veg-sidebar--left { left: -30px; }
+        .veg-sidebar--right { right: -30px; }
+        .veg-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 70px;
+            animation: float 8s ease-in-out infinite;
+        }
+        .veg-item:nth-child(odd) { animation-delay: -4s; }
+        .veg-sidebar--right .veg-item { flex-direction: row-reverse; }
+        .veg-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--green-dark);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .veg-item:hover .veg-label { opacity: 1; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Шапка */
+        .header {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+            gap: 20px;
+        }
+        .logo-block { display: flex; align-items: center; gap: 12px; }
+        .logo-mark {
+            width: 42px; height: 42px;
+            background: var(--green);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+        }
+        .logo-title { font-size: 18px; font-weight: 700; color: var(--green-dark); }
+        .logo-subtitle {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--green);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+        .nav-actions { display: flex; gap: 6px; }
+        .btn-nav {
+            padding: 8px 16px;
+            font-family: var(--font);
+            font-size: 13px;
+            font-weight: 600;
+            background: transparent;
+            border: 1.5px solid transparent;
+            border-radius: var(--radius-xl);
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .btn-nav:hover { background: var(--green-light); }
+        .btn-nav.active { background: var(--green-dark); color: #fff; }
+        .btn-nav.danger { color: var(--red); }
+        .btn-nav.danger:hover { background: #FEF5F5; border-color: #F5D5D5; }
+
+        /* Контент */
+        .main {
+            flex: 1;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+        .section { display: none; width: 100%; animation: fadeIn 0.4s ease; }
+        .section.visible { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Карточки */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            max-width: 520px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+        .card-wide { max-width: 750px; }
+        .card__header {
+            background: linear-gradient(160deg, #05310A, #0F5A05);
+            padding: 32px;
+            text-align: center;
+            color: #fff;
+            position: relative;
+        }
+        .card__header::after {
+            content: '🥬🥕🍅🧅🥔🥒🌽🧄';
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            letter-spacing: 4px;
+            opacity: 0.3;
+            white-space: nowrap;
+        }
+        .card__logo {
+            width: 52px; height: 52px;
+            background: rgba(255,255,255,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+            font-weight: 700;
+            font-size: 22px;
+        }
+        .card__title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+        .card__desc { font-size: 12px; opacity: 0.8; }
+        .card__body { padding: 28px 32px 32px; }
+
+        /* Формы */
+        .field { margin-bottom: 16px; }
+        .field__label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        .field__input, .field__select, .field__textarea {
+            width: 100%;
+            padding: 11px 14px;
+            font-family: var(--font);
+            font-size: 14px;
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            transition: all 0.15s;
+        }
+        .field__textarea { min-height: 100px; resize: vertical; }
+        .field__input:focus, .field__select:focus, .field__textarea:focus {
+            outline: none;
+            border-color: var(--green);
+            box-shadow: 0 0 0 3px rgba(15,90,5,0.06);
+            background: #fff;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 13px;
+            font-family: var(--font);
+            font-size: 14px;
+            font-weight: 700;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-green { background: var(--green-dark); color: #fff; }
+        .btn-green:hover { background: var(--green); transform: translateY(-1px); }
+        .btn-purple { background: var(--purple); color: #fff; }
+        .btn-purple:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-orange { background: var(--orange); color: #fff; }
+        .btn-blue { background: var(--blue); color: #fff; }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--green);
+            color: var(--green);
+        }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .card__footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .card__footer a { color: var(--green); font-weight: 700; cursor: pointer; }
+        .card__footer a:hover { text-decoration: underline; }
+
+        /* Алгоритмическая задача */
+        .task-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        .task-card h4 { color: var(--green-dark); margin-bottom: 8px; }
+        .task-card pre {
+            background: #1E1E1E;
+            color: #D4D4D4;
+            padding: 14px;
+            border-radius: var(--radius-sm);
+            overflow-x: auto;
+            font-size: 13px;
+            line-height: 1.5;
+            margin: 10px 0;
+        }
+        .task-card .examples { font-size: 13px; color: var(--text-secondary); }
+        .task-card .constraints { font-size: 12px; color: var(--text-muted); margin-top: 8px; }
+
+        .code-editor {
+            width: 100%;
+            min-height: 180px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            padding: 14px;
+            background: #1E1E1E;
+            color: #D4D4D4;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            resize: vertical;
+            tab-size: 4;
+        }
+        .code-editor:focus { outline: none; border-color: var(--blue); }
+
+        .test-results {
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            margin-top: 10px;
+            font-size: 13px;
+        }
+        .test-pass { background: #E8F5E9; color: #1B5E20; }
+        .test-fail { background: #FFEBEE; color: #C62828; }
+
+        /* Статус-бар */
+        .status-bar {
+            display: flex;
+            gap: 0;
+            margin-bottom: 20px;
+            background: var(--card);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .status-step {
+            flex: 1;
+            padding: 12px 16px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            border-right: 1px solid var(--border);
+            position: relative;
+        }
+        .status-step:last-child { border-right: none; }
+        .status-step.done { background: var(--green-light); color: var(--green-dark); }
+        .status-step.current { background: var(--green); color: #fff; }
+        .status-step .step-icon { display: block; font-size: 18px; margin-bottom: 2px; }
+
+        /* Видео */
+        .video-container {
+            width: 100%;
+            background: var(--bg);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 240px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        .video-container video { width: 100%; max-height: 300px; }
+
+        /* Алерты */
+        .alert {
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 16px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .alert-error { background: #FFF8F6; color: #B83A2A; border-left: 4px solid #C0392B; }
+        .alert-success { background: #F6FBF2; color: #1B5E20; border-left: 4px solid #0F5A05; }
+        .alert-info { background: #F0F7FF; color: #1A5C9E; border-left: 4px solid #2980B9; }
+
+        /* Футер */
+        .footer {
+            background: var(--green-dark);
+            color: rgba(255,255,255,0.7);
+            padding: 16px 32px;
+            margin-top: auto;
+            font-size: 12px;
+        }
+        .footer-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .footer-links { display: flex; gap: 16px; }
+        .footer-links a { color: rgba(255,255,255,0.7); text-decoration: none; }
+        .footer-links a:hover { color: #fff; }
+
+        @media (max-width: 1100px) { .veg-sidebar { display: none; } }
+        @media (max-width: 768px) {
+            .header-inner { flex-direction: column; height: auto; padding: 12px 0; }
+            .card__body { padding: 20px; }
+            .status-bar { flex-wrap: wrap; }
+            .status-step { flex: 1 1 50%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Боковые овощи -->
+    <div class="veg-sidebar veg-sidebar--left">
+        <div class="veg-item"><span>🥬</span><span class="veg-label">Капуста</span></div>
+        <div class="veg-item"><span>🥕</span><span class="veg-label">Морковь</span></div>
+        <div class="veg-item"><span>🍅</span><span class="veg-label">Томаты</span></div>
+        <div class="veg-item"><span>🧅</span><span class="veg-label">Лук</span></div>
+    </div>
+    <div class="veg-sidebar veg-sidebar--right">
+        <div class="veg-item"><span>🥔</span><span class="veg-label">Картофель</span></div>
+        <div class="veg-item"><span>🥒</span><span class="veg-label">Огурцы</span></div>
+        <div class="veg-item"><span>🌽</span><span class="veg-label">Кукуруза</span></div>
+        <div class="veg-item"><span>🧄</span><span class="veg-label">Чеснок</span></div>
+    </div>
+
+    <!-- Шапка -->
+    <header class="header">
+        <div class="header-inner">
+            <div class="logo-block">
+                <div class="logo-mark">X5</div>
+                <div>
+                    <div class="logo-title">X5 Tech</div>
+                    <div class="logo-subtitle">Internship</div>
+                </div>
+            </div>
+            <nav class="nav-actions">
+                <button class="btn-nav active" data-page="login" id="nav-login">Вход</button>
+                <button class="btn-nav" data-page="register" id="nav-register">Регистрация</button>
+                <button class="btn-nav" data-page="dashboard" id="nav-dashboard" style="display:none">📋 Этапы</button>
+                <button class="btn-nav danger" id="nav-logout" style="display:none">Выйти</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Контент -->
+    <main class="main">
+
+        <!-- ====== ЛОГИН ====== -->
+        <section class="section visible" id="page-login">
+            <div class="card">
+                <div class="card__header">
+                    <div class="card__logo">X5</div>
+                    <h2 class="card__title">Вход для кандидатов</h2>
+                    <p class="card__desc">Стажировка разработчик • X5 Tech</p>
+                </div>
+                <div class="card__body">
+                    <div id="msg-login"></div>
+                    <form onsubmit="return handleLogin(event)">
+                        <div class="field">
+                            <label class="field__label">Email</label>
+                            <input class="field__input" type="email" id="loginEmail" required placeholder="candidate@email.com">
+                        </div>
+                        <div class="field">
+                            <label class="field__label">Пароль</label>
+                            <input class="field__input" type="password" id="loginPassword" required placeholder="Введите пароль">
+                        </div>
+                        <button class="btn btn-green" type="submit">Войти</button>
+                    </form>
+                    <div class="card__footer">
+                        Нет аккаунта? <a data-page="register">Зарегистрироваться</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====== РЕГИСТРАЦИЯ + АНКЕТА ====== -->
+        <section class="section" id="page-register">
+            <div class="card card-wide">
+                <div class="card__header">
+                    <div class="card__logo">X5</div>
+                    <h2 class="card__title">Регистрация на стажировку</h2>
+                    <p class="card__desc">Заполните анкету кандидата</p>
+                </div>
+                <div class="card__body">
+                    <div id="msg-register"></div>
+                    <form onsubmit="return handleRegister(event)">
+                        <div class="field">
+                            <label class="field__label">ФИО *</label>
+                            <input class="field__input" type="text" id="regName" required placeholder="Иванов Иван Иванович">
+                        </div>
+                        <div class="field">
+                            <label class="field__label">Email *</label>
+                            <input class="field__input" type="email" id="regEmail" required placeholder="candidate@email.com">
+                        </div>
+                        <div class="field">
+                            <label class="field__label">Пароль *</label>
+                            <input class="field__input" type="password" id="regPassword" required placeholder="Минимум 8 символов" minlength="8">
+                        </div>
+                        <div class="field">
+                            <label class="field__label">Телефон</label>
+                            <input class="field__input" type="tel" id="regPhone" placeholder="+7 (999) 123-45-67">
+                        </div>
+                        <div class="field">
+                            <label class="field__label">ВУЗ / Учебное заведение</label>
+                            <input class="field__input" type="text" id="regUniversity" placeholder="МГУ им. Ломоносова">
+                        </div>
+                        <div class="field">
+                            <label class="field__label">Специальность / Факультет</label>
+                            <input class="field__input" type="text" id="regSpecialty" placeholder="Прикладная математика и информатика">
+                        </div>
+                        <div class="field">
+                            <label class="field__label">Курс</label>
+                            <select class="field__select" id="regCourse">
+                                <option value="">Выберите</option>
+                                <option>2 курс бакалавриата</option>
+                                <option>3 курс бакалавриата</option>
+                                <option>4 курс бакалавриата</option>
+                                <option>1 курс магистратуры</option>
+                                <option>2 курс магистратуры</option>
+                                <option>Выпускник</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label class="field__label">Ключевые навыки (через запятую)</label>
+                            <input class="field__input" type="text" id="regSkills" placeholder="Python, JavaScript, SQL, Git">
+                        </div>
+                        <div class="field">
+                            <label class="field__label">О себе (мотивация, почему хотите в X5)</label>
+                            <textarea class="field__textarea" id="regAbout" placeholder="Расскажите, почему вы хотите пройти стажировку в X5 Tech..."></textarea>
+                        </div>
+                        <button class="btn btn-green" type="submit">Зарегистрироваться и перейти к тесту</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====== ПАНЕЛЬ ЭТАПОВ (после входа) ====== -->
+        <section class="section" id="page-dashboard">
+            <div class="card card-wide">
+                <div class="card__header">
+                    <div class="card__logo">📋</div>
+                    <h2 class="card__title">Этапы отбора</h2>
+                    <p class="card__desc" id="dash-name">Стажировка разработчик</p>
+                </div>
+                <div class="card__body">
+                    <!-- Статус-бар -->
+                    <div class="status-bar" id="statusBar">
+                        <div class="status-step current" id="step-indicator-1">
+                            <span class="step-icon">📝</span> Анкета
+                        </div>
+                        <div class="status-step" id="step-indicator-2">
+                            <span class="step-icon">💻</span> Алгоритмы
+                        </div>
+                        <div class="status-step" id="step-indicator-3">
+                            <span class="step-icon">🎥</span> VCV
+                        </div>
+                        <div class="status-step" id="step-indicator-4">
+                            <span class="step-icon">✅</span> Результат
+                        </div>
+                    </div>
+
+                    <!-- Этап 2: Алгоритмическая задача -->
+                    <div id="stage-task" class="hidden">
+                        <h3 style="margin-bottom:12px">💻 Алгоритмическая задача (LeetCode-style)</h3>
+                        <div id="msg-task"></div>
+                        <div class="task-card">
+                            <h4>🟡 Два числа — Two Sum</h4>
+                            <p style="font-size:14px;margin-bottom:10px">
+                                Дан массив целых чисел <code>nums</code> и целое число <code>target</code>.
+                                Найдите индексы двух чисел, сумма которых равна <code>target</code>.
+                            </p>
+                            <pre>Вход: nums = [2, 7, 11, 15], target = 9
+Выход: [0, 1]
+Пояснение: nums[0] + nums[1] = 2 + 7 = 9</pre>
+                            <p class="examples"><strong>Пример 2:</strong> nums = [3, 2, 4], target = 6 → [1, 2]</p>
+                            <p class="constraints">Ограничения: 2 ≤ nums.length ≤ 10⁴, -10⁹ ≤ nums[i] ≤ 10⁹</p>
+                        </div>
+                        <div class="field">
+                            <label class="field__label">Ваше решение (на любом языке)</label>
+                            <textarea class="code-editor" id="taskSolution" placeholder="def twoSum(nums, target):
+    # Ваш код здесь
+    pass"></textarea>
+                        </div>
+                        <div class="field">
+                            <label class="field__label">Тестовый пример (для проверки)</label>
+                            <input class="field__input" type="text" id="taskTestInput" placeholder="2,7,11,15 / 9" value="2,7,11,15 / 9">
+                        </div>
+                        <div id="taskTestResult"></div>
+                        <button class="btn btn-blue" onclick="runTest()" style="margin-bottom:10px">▶ Запустить тест</button>
+                        <button class="btn btn-green" onclick="submitTask()">✅ Отправить решение</button>
+                    </div>
+
+                    <!-- Этап 3: VCV -->
+                    <div id="stage-vcv" class="hidden">
+                        <h3 style="margin-bottom:12px">🎥 Видео-собеседование (VCV)</h3>
+                        <div id="msg-vcv"></div>
+                        
+                        <div class="task-card">
+                            <h4>❓ Вопрос: Почему вы хотите стать разработчиком в X5 Tech?</h4>
+                            <p style="font-size:13px;color:var(--text-secondary)">
+                                Расскажите о вашей мотивации, почему выбрали ритейл-тех, 
+                                какие ценности X5 вам близки. У вас 2-3 минуты.
+                            </p>
+                        </div>
+                        <div class="task-card">
+                            <h4>❓ Вопрос: Какую самую сложную задачу вы решали?</h4>
+                            <p style="font-size:13px;color:var(--text-secondary)">
+                                Опишите техническую проблему, процесс решения и результат.
+                            </p>
+                        </div>
+
+                        <div class="video-container" id="vcvPreview">
+                            <p style="color:var(--text-muted)">🎥 Нажмите «Записать» для начала</p>
+                        </div>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap">
+                            <button class="btn btn-orange" id="btnRecord" onclick="startRecording()">🎤 Записать ответ</button>
+                            <button class="btn btn-outline" id="btnStop" onclick="stopRecording()" style="display:none">⏹ Остановить</button>
+                            <button class="btn btn-green" id="btnSubmitVCV" onclick="submitVCV()" style="display:none">✅ Отправить видео</button>
+                        </div>
+                        <p style="font-size:11px;color:var(--text-muted);margin-top:8px">
+                            Нужно записать ОДНО видео с ответами на оба вопроса. До 5 минут.
+                        </p>
+                    </div>
+
+                    <!-- Этап 4: Результат -->
+                    <div id="stage-result" class="hidden">
+                        <h3 style="margin-bottom:12px">📊 Ваш результат</h3>
+                        <div id="finalResult"></div>
+                    </div>
+
+                    <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap" id="dashButtons">
+                        <button class="btn btn-purple" id="btnGoTask" onclick="showStage('task')">💻 Перейти к алгоритмам</button>
+                        <button class="btn btn-orange" id="btnGoVCV" onclick="showStage('vcv')" style="display:none">🎥 Перейти к VCV</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <span>© X5 Group — Стажировка разработчик</span>
+            <div class="footer-links">
+                <a href="#">Конфиденциальность</a>
+                <a href="#">Политика</a>
+                <a href="#">Контакты</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ============ БАЗА ДАННЫХ (localStorage) ============
+        const DB_KEY = 'x5_internship_db';
+        function DB() {
+            try { return JSON.parse(localStorage.getItem(DB_KEY) || '{"users":[],"candidates":[]}'); }
+            catch(e) { return { users: [], candidates: [] }; }
+        }
+        function DBsave(data) { localStorage.setItem(DB_KEY, JSON.stringify(data)); }
+
+        function getCurrentUser() {
+            try { return JSON.parse(localStorage.getItem('x5_current_candidate') || 'null'); }
+            catch(e) { return null; }
+        }
+        function setCurrentUser(user) { localStorage.setItem('x5_current_candidate', JSON.stringify(user)); }
+
+        let mediaRecorder, recordedChunks, currentStage = 'task';
+
+        // ============ ИНИЦИАЛИЗАЦИЯ ============
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = getCurrentUser();
+            if (user) onLoginSuccess(user);
+
+            // Навигация
+            document.querySelectorAll('[data-page]').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    navigate(el.dataset.page);
+                });
+            });
+
+            document.getElementById('nav-logout')?.addEventListener('click', logout);
+        });
+
+        // ============ НАВИГАЦИЯ ============
+        function navigate(page) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
+            document.getElementById('page-' + page).classList.add('visible');
+
+            document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
+            const navBtn = document.getElementById('nav-' + page);
+            if (navBtn) navBtn.classList.add('active');
+
+            clearMessages();
+        }
+
+        // ============ ЛОГИН ============
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const db = DB();
+            const user = db.users.find(u => u.email === email && u.password === btoa(password));
+
+            if (!user) return msg('msg-login', 'Неверный email или пароль', 'error');
+
+            setCurrentUser(user);
+            msg('msg-login', 'Вход выполнен! 🥕', 'success');
+            setTimeout(() => onLoginSuccess(user), 800);
+            return false;
+        }
+
+        // ============ РЕГИСТРАЦИЯ + АНКЕТА ============
+        function handleRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const phone = document.getElementById('regPhone').value;
+            const university = document.getElementById('regUniversity').value;
+            const specialty = document.getElementById('regSpecialty').value;
+            const course = document.getElementById('regCourse').value;
+            const skills = document.getElementById('regSkills').value;
+            const about = document.getElementById('regAbout').value;
+
+            if (!name || !email || !password) return msg('msg-register', 'Заполните обязательные поля', 'error');
+            if (password.length < 8) return msg('msg-register', 'Пароль минимум 8 символов', 'error');
+
+            const db = DB();
+            if (db.users.find(u => u.email === email)) return msg('msg-register', 'Email уже занят', 'error');
+
+            const candidate = {
+                id: 'CAND-' + Date.now().toString(36).toUpperCase(),
+                name, email,
+                password: btoa(password),
+                phone, university, specialty, course, skills, about,
+                stage: 'registered',
+                taskPassed: false,
+                vcvSubmitted: false,
+                createdAt: new Date().toISOString()
+            };
+
+            db.users.push(candidate);
+            db.candidates.push({ id: candidate.id, name, email, stage: 'registered' });
+            DBsave(db);
+            setCurrentUser(candidate);
+            e.target.reset();
+            msg('msg-register', 'Анкета принята! Переходим к тесту 🥬', 'success');
+            setTimeout(() => onLoginSuccess(candidate), 1000);
+            return false;
+        }
+
+        // ============ УСПЕШНЫЙ ВХОД ============
+        function onLoginSuccess(user) {
+            document.getElementById('nav-login').style.display = 'none';
+            document.getElementById('nav-register').style.display = 'none';
+            document.getElementById('nav-dashboard').style.display = 'inline-flex';
+            document.getElementById('nav-logout').style.display = 'inline-flex';
+
+            document.getElementById('dash-name').textContent = user.name + ' • Стажировка разработчик';
+
+            // Определяем этап
+            if (user.vcvSubmitted) {
+                showStage('result');
+                updateStatusBar(4);
+            } else if (user.taskPassed) {
+                showStage('vcv');
+                updateStatusBar(3);
+            } else {
+                showStage('task');
+                updateStatusBar(2);
+            }
+
+            navigate('dashboard');
+        }
+
+        // ============ СТАТУС-БАР ============
+        function updateStatusBar(activeStep) {
+            for (let i = 1; i <= 4; i++) {
+                const el = document.getElementById('step-indicator-' + i);
+                el.classList.remove('done', 'current');
+                if (i < activeStep) el.classList.add('done');
+                if (i === activeStep) el.classList.add('current');
+            }
+        }
+
+        // ============ ПОКАЗ ЭТАПА ============
+        function showStage(stage) {
+            document.getElementById('stage-task').classList.add('hidden');
+            document.getElementById('stage-vcv').classList.add('hidden');
+            document.getElementById('stage-result').classList.add('hidden');
+
+            document.getElementById('btnGoTask').style.display = 'none';
+            document.getElementById('btnGoVCV').style.display = 'none';
+
+            if (stage === 'task') {
+                document.getElementById('stage-task').classList.remove('hidden');
+                document.getElementById('btnGoTask').style.display = 'inline-block';
+                updateStatusBar(2);
+            } else if (stage === 'vcv') {
+                document.getElementById('stage-vcv').classList.remove('hidden');
+                document.getElementById('btnGoVCV').style.display = 'inline-block';
+                updateStatusBar(3);
+            } else if (stage === 'result') {
+                document.getElementById('stage-result').classList.remove('hidden');
+                updateStatusBar(4);
+                showFinalResult();
+            }
+
+            currentStage = stage;
+        }
+
+        // ============ ТЕСТ АЛГОРИТМОВ ============
+        function runTest() {
+    const code = document.getElementById('taskSolution').value.trim();
+    const testInput = document.getElementById('taskTestInput').value.trim();
+    const resultDiv = document.getElementById('taskTestResult');
+
+    if (!code) {
+        resultDiv.innerHTML = '<div class="test-results test-fail">Введите код решения</div>';
+        return;
+    }
+
+    // Парсим входные данные
+    const parts = testInput.split('/');
+    if (parts.length !== 2) {
+        resultDiv.innerHTML = '<div class="test-results test-fail">Формат: nums / target (например: 2,7,11,15 / 9)</div>';
+        return;
+    }
+
+    const nums = parts[0].split(',').map(n => parseInt(n.trim()));
+    const target = parseInt(parts[1].trim());
+
+    if (nums.some(isNaN) || isNaN(target)) {
+        resultDiv.innerHTML = '<div class="test-results test-fail">Некорректные числа</div>';
+        return;
+    }
+
+    // Исправленная проверка решения
+    try {
+        // Создаём функцию, которая выполняет код и возвращает результат
+        const fullCode = `
+            ${code}
+            return twoSum([${nums.join(',')}], ${target});
+        `;
+        
+        const result = new Function(fullCode)();
+
+        // Проверяем ответ
+        if (Array.isArray(result) && result.length === 2) {
+            const sum = nums[result[0]] + nums[result[1]];
+            if (sum === target) {
+                const expected = findTwoSum(nums, target);
+                if (expected) {
+                    resultDiv.innerHTML = `<div class="test-results test-pass">✅ Тест пройден! Результат: [${result}] — сумма = ${target}</div>`;
+                } else {
+                    resultDiv.innerHTML = '<div class="test-results test-fail">❌ Индексы не дают нужную сумму</div>';
+                }
+            } else {
+                resultDiv.innerHTML = `<div class="test-results test-fail">❌ Сумма nums[${result[0]}] + nums[${result[1]}] = ${sum}, а нужно ${target}</div>`;
+            }
+        } else {
+            resultDiv.innerHTML = `<div class="test-results test-fail">❌ Функция должна вернуть массив из двух индексов, а вернула: ${JSON.stringify(result)}</div>`;
+        }
+    } catch (err) {
+        resultDiv.innerHTML = `<div class="test-results test-fail">❌ Ошибка: ${err.message}</div>`;
+    }
+}
+
+        function findTwoSum(nums, target) {
+            const map = {};
+            for (let i = 0; i < nums.length; i++) {
+                const complement = target - nums[i];
+                if (map[complement] !== undefined) return [map[complement], i];
+                map[nums[i]] = i;
+            }
+            return null;
+        }
+
+        function submitTask() {
+            const code = document.getElementById('taskSolution').value.trim();
+            if (!code) return msg('msg-task', 'Сначала напишите решение', 'error');
+
+            const db = DB();
+            const user = getCurrentUser();
+            const idx = db.users.findIndex(u => u.id === user.id);
+
+            if (idx !== -1) {
+                db.users[idx].taskPassed = true;
+                db.users[idx].stage = 'task_passed';
+                db.users[idx].taskSolution = code;
+                DBsave(db);
+                setCurrentUser(db.users[idx]);
+                msg('msg-task', '✅ Решение принято! Переходите к VCV', 'success');
+                document.getElementById('btnGoVCV').style.display = 'inline-block';
+                setTimeout(() => showStage('vcv'), 1000);
+            }
+        }
+
+        // ============ VCV — ЗАПИСЬ ВИДЕО ============
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+
+                const preview = document.getElementById('vcvPreview');
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                video.autoplay = true;
+                video.muted = true;
+                preview.innerHTML = '';
+                preview.appendChild(video);
+
+                mediaRecorder = new MediaRecorder(stream);
+                recordedChunks = [];
+
+                mediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) recordedChunks.push(e.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                    const url = URL.createObjectURL(blob);
+                    const recordedVideo = document.createElement('video');
+                    recordedVideo.src = url;
+                    recordedVideo.controls = true;
+                    preview.innerHTML = '';
+                    preview.appendChild(recordedVideo);
+                    preview.dataset.videoUrl = url;
+
+                    document.getElementById('btnRecord').style.display = 'none';
+                    document.getElementById('btnStop').style.display = 'none';
+                    document.getElementById('btnSubmitVCV').style.display = 'inline-block';
+                };
+
+                mediaRecorder.start();
+                document.getElementById('btnRecord').style.display = 'none';
+                document.getElementById('btnStop').style.display = 'inline-block';
+                document.getElementById('btnSubmitVCV').style.display = 'none';
+
+            } catch (err) {
+                msg('msg-vcv', 'Ошибка доступа к камере: ' + err.message, 'error');
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                mediaRecorder.stream.getTracks().forEach(t => t.stop());
+            }
+        }
+
+        function submitVCV() {
+            const db = DB();
+            const user = getCurrentUser();
+            const idx = db.users.findIndex(u => u.id === user.id);
+
+            if (idx !== -1) {
+                db.users[idx].vcvSubmitted = true;
+                db.users[idx].stage = 'vcv_submitted';
+                db.users[idx].vcvSubmittedAt = new Date().toISOString();
+                DBsave(db);
+                setCurrentUser(db.users[idx]);
+                msg('msg-vcv', '✅ Видео отправлено! Ждите результатов', 'success');
+                setTimeout(() => showStage('result'), 1500);
+            }
+        }
+
+        // ============ РЕЗУЛЬТАТ ============
+        function showFinalResult() {
+            const user = getCurrentUser();
+            const resultDiv = document.getElementById('finalResult');
+
+            if (user.vcvSubmitted) {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        <strong>🎉 Поздравляем, ${user.name}!</strong><br>
+                        Вы успешно прошли все этапы отбора на стажировку.<br>
+                        Ваше видео рассмотрят рекрутеры X5 Tech.<br><br>
+                        <strong>Статус:</strong> VCV отправлено на проверку<br>
+                        <strong>Дата:</strong> ${new Date(user.vcvSubmittedAt).toLocaleString('ru-RU')}<br><br>
+                        Ожидайте обратную связь на email: ${user.email}
+                    </div>
+                `;
+            } else if (user.taskPassed) {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-info">
+                        <strong>📋 Алгоритмический тест пройден!</strong><br>
+                        Теперь нужно записать VCV-видео.
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-info">
+                        <strong>📝 Анкета принята!</strong><br>
+                        Решите алгоритмическую задачу для продолжения.
+                    </div>
+                `;
+            }
+        }
+
+        // ============ ВЫХОД ============
+        function logout() {
+            if (confirm('Выйти?')) {
+                localStorage.removeItem('x5_current_candidate');
+                document.getElementById('nav-login').style.display = 'inline-flex';
+                document.getElementById('nav-register').style.display = 'inline-flex';
+                document.getElementById('nav-dashboard').style.display = 'none';
+                document.getElementById('nav-logout').style.display = 'none';
+                navigate('login');
+            }
+        }
+
+        // ============ СООБЩЕНИЯ ============
+        function msg(id, text, type) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.className = 'alert alert-' + type;
+            el.textContent = text;
+            setTimeout(() => { el.textContent = ''; el.className = ''; }, 4000);
+        }
+
+        function clearMessages() {
+            document.querySelectorAll('.alert').forEach(a => { a.textContent = ''; a.className = ''; });
+        }
+    </script>
+</body>
+</html>
