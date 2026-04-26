@@ -1,0 +1,15 @@
+{
+  "users": [
+    {
+      "id": "EMP-MOFN17RG",
+      "name": "Иванов Иван",
+      "email": "ivanov@x5.ru",
+      "password": "$2a$10$TfCJgE3QF3MWwtANCC2vUeFu0GjgHyPgx8Cwk7bvWHyGQJUiF9Xom",
+      "role": "Сотрудник",
+      "department": "X5 Tech",
+      "createdAt": "2026-04-26T10:41:06.700Z",
+      "lastLogin": "2026-04-26T10:41:06.700Z",
+      "loginCount": 1
+    }
+  ]
+}
